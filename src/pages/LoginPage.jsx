@@ -24,6 +24,8 @@ const LoginPage = () => {
         navigate('/hospital-dashboard');
       } else if (result.role === 'DONOR') {
         navigate('/donor-dashboard');
+      } else if (result.role === 'ADMIN') {
+        navigate('/admin-dashboard');
       } else {
         navigate('/');
       }

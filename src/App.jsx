@@ -11,6 +11,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import HospitalDashboard from './pages/HospitalDashboard';
 import DonorDashboard from './pages/DonorDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 function App() {
   return (
@@ -31,6 +32,11 @@ function App() {
             {/* Protected Routes for Donor */}
             <Route element={<ProtectedRoute allowedRoles={['DONOR']} />}>
               <Route path="/donor-dashboard" element={<DonorDashboard />} />
+            </Route>
+
+            {/* Protected Routes for Admin */}
+            <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
+              <Route path="/admin-dashboard" element={<AdminDashboard />} />
             </Route>
           </Routes>
         </div>

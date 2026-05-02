@@ -1,8 +1,20 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { Activity, Bell, HeartPulse, MapPin } from 'lucide-react';
 
 const LandingPage = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'HOSPITAL') navigate('/hospital-dashboard');
+      else if (user.role === 'DONOR') navigate('/donor-dashboard');
+      else if (user.role === 'ADMIN') navigate('/admin-dashboard');
+    }
+  }, [user, navigate]);
+
   return (
     <div className="flex-1 bg-gradient-to-b from-brand-50 via-white to-white">
       {/* Hero Section */}
