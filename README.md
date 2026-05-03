@@ -48,9 +48,7 @@ Smart Blood Network is designed to:
 
 ### 1️⃣ Navigate to backend
 
-```bash
-cd backend
-```
+
 
 ### 2️⃣ Configure database
 

@@ -22,29 +22,38 @@ const AdminDashboard = () => {
     activeRequests: 0,
     successfulDonations: 0
   });
+  const [users, setUsers] = useState([]);
+  const [activeRequests, setActiveRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // In a real app, fetch these from an admin stats endpoint
-    // For now, we'll simulate or fetch what's available
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
+      setIsLoading(true);
       try {
-        // Example: api.get('/api/admin/stats')
-        // Simulating data for now to show features
-        setStats({
-          totalDonors: 124,
-          totalHospitals: 18,
-          activeRequests: 5,
-          successfulDonations: 89
-        });
-        setIsLoading(false);
+        const [statsRes, usersRes, requestsRes] = await Promise.all([
+          api.get('/api/admin/stats'),
+          api.get('/api/admin/users'),
+          api.get('/api/admin/requests')
+        ]);
+
+        if (statsRes.data.success) {
+          setStats(statsRes.data.data);
+        }
+        if (usersRes.data.success) {
+          setUsers(usersRes.data.data);
+        }
+        if (requestsRes.data.success) {
+          setActiveRequests(requestsRes.data.data);
+        }
       } catch (error) {
-        toast.error('Failed to fetch admin stats');
+        console.error('Admin Dashboard Error:', error);
+        toast.error('Failed to fetch admin data');
+      } finally {
         setIsLoading(false);
       }
     };
 
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
   return (
@@ -129,27 +138,24 @@ const AdminDashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  <UserRow 
-                    name="City Hospital Central" 
-                    email="city@hospital.com" 
-                    role="HOSPITAL" 
-                    status="Active" 
-                    date="May 12, 2024"
-                  />
-                  <UserRow 
-                    name="Sarah Wilson" 
-                    email="sarah.w@gmail.com" 
-                    role="DONOR" 
-                    status="Active" 
-                    date="May 14, 2024"
-                  />
-                  <UserRow 
-                    name="John Thompson" 
-                    email="jt88@yahoo.com" 
-                    role="DONOR" 
-                    status="Active" 
-                    date="May 15, 2024"
-                  />
+                  {users.length > 0 ? (
+                    users.map((u) => (
+                      <UserRow 
+                        key={u.id}
+                        name={u.name} 
+                        email={u.email} 
+                        role={u.role} 
+                        status="Active" 
+                        date={new Date(u.createdAt || Date.now()).toLocaleDateString()}
+                      />
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-10 text-center text-slate-500">
+                        No users found
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -164,18 +170,21 @@ const AdminDashboard = () => {
               <h2 className="text-xl font-bold text-slate-900">Active Emergencies</h2>
             </div>
             <div className="p-6 space-y-4">
-              <EmergencyItem 
-                hospital="St. Mary's Hospital" 
-                bloodGroup="O-" 
-                units={3} 
-                time="12 mins ago" 
-              />
-              <EmergencyItem 
-                hospital="Red Cross Clinic" 
-                bloodGroup="AB+" 
-                units={1} 
-                time="45 mins ago" 
-              />
+              {activeRequests.length > 0 ? (
+                activeRequests.map((req) => (
+                  <EmergencyItem 
+                    key={req.id}
+                    hospital={req.hospital?.name || 'Unknown Hospital'} 
+                    bloodGroup={req.bloodGroup} 
+                    units={req.unitsRequired} 
+                    time={new Date(req.createdAt).toLocaleTimeString()} 
+                  />
+                ))
+              ) : (
+                <div className="text-center py-10 text-slate-500 text-sm">
+                  No active emergencies
+                </div>
+              )}
             </div>
             <div className="p-6 pt-0">
               <button className="w-full py-3 bg-slate-50 text-slate-600 rounded-xl font-medium hover:bg-slate-100 transition-colors">
