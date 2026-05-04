@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'https://blood-donation-network-backend.onrender.com',
 });
 
 // Interceptor to add the JWT token to requests
